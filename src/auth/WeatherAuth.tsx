@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
-  User as FirebaseUser,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase-config";
 
-
 interface User {
-  email: string | null; 
+  uid: string;
+  email: string | null;
   password: string;
 }
 
@@ -18,31 +16,31 @@ export function WeatherAuth() {
   const [loginPassword, setLoginPassword] = useState("");
 
   const [user, setUser] = useState<User | null>({
+    uid: "",
     email: "",
-    password: "", 
+    password: "",
   });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser: FirebaseUser | null) => {
-      setUser(currentUser ? { email: currentUser.email || "", password: "" } : null);
+      setUser(currentUser ? { uid: currentUser.uid, email: currentUser.email || "", password: "" } : null);
     });
-    return () => unsubscribe(); 
-    }, []);
+    return () => unsubscribe();
+  }, []);
 
-    const createUserDocument = async (user: FirebaseUser | null) => {
-      if (!user) return;
-    
-      try {
-        const userRef = doc(db, "users", user.uid);
-        const userData = {
-          email: user.email || "",
-        };
-        await setDoc(userRef, userData);
-      } catch (error) {
-        console.error("Error creating user document:", error);
-      }
-    };
-    
+  const createUserDocument = async (user: FirebaseUser | null) => {
+    if (!user) return;
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userData = {
+        email: user.email || "",
+      };
+      await setDoc(userRef, userData);
+    } catch (error) {
+      console.error("Error creating user document:", error);
+    }
+  };
 
   const register = async () => {
     try {
@@ -53,7 +51,7 @@ export function WeatherAuth() {
       );
       const user = userCredential.user;
       if (user) {
-        setUser({ email: user.email, password: "" });
+        setUser({ uid: user.uid, email: user.email, password: "" });
         await createUserDocument(user);
       }
     } catch (error) {
@@ -70,7 +68,7 @@ export function WeatherAuth() {
       );
       const user = userCredential.user;
       if (user) {
-        setUser({ email: user.email, password: "" });
+        setUser({ uid: user.uid, email: user.email, password: "" });
       }
     } catch (error) {
       console.log((error as Error).message);
@@ -86,52 +84,17 @@ export function WeatherAuth() {
     }
   };
 
+  const isAuthenticated = user !== null; 
+
   return {
-    logout, 
-    user, 
-
-    render: (
-      <div className="App">
-          <h1>Weather App</h1>
-          {user ? (
-              <div className="">
-                  <p>Welcome, {user.email}!</p>
-                  <button onClick={logout}>Logout</button>
-              </div>
-          ) : (
-              <div>
-                  <h2>Register</h2>
-                  <input
-                      type="email"
-                      placeholder="Email"
-                      value={registerEmail}
-                      onChange={(e) => setRegisterEmail(e.target.value)}
-                  />
-                  <input
-                      type="password"
-                      placeholder="Password"
-                      value={registerPassword}
-                      onChange={(e) => setRegisterPassword(e.target.value)}
-                  />
-                  <button onClick={register}>Register</button>
-
-                  <h2>Login</h2>
-                  <input
-                      type="email"
-                      placeholder="Email"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                  />
-                  <input
-                      type="password"
-                      placeholder="Password"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                  />
-                  <button onClick={login}>Login</button>
-              </div>
-          )}
-      </div>
-    )
+    logout,
+    user,
+    register,
+    login,
+    setRegisterEmail, 
+    setRegisterPassword, 
+    setLoginEmail, 
+    setLoginPassword,
+    isAuthenticated
   };
 }

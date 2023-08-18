@@ -1,11 +1,12 @@
 import Home from '../pages/Home'
-import Profile from '../pages/Profile'
 import Dashboard from '../pages/Dashboard'
+import { WeatherAuth } from '../auth/WeatherAuth';
+import SignIn from '../pages/SignIn';
 
 interface RouteType {
     path: string,
-    component: () => JSX.Element,
-    name: string
+    component: () => JSX.Element | null ,
+    name: string,
 }
 
 const routes: RouteType[] = [
@@ -20,9 +21,9 @@ const routes: RouteType[] = [
       name: "Dashboard",
     },
     {
-      path: "/profile",
-      component: Profile,
-      name: "Profile",
+      path: "/signin",
+      component: SignIn,
+      name: "Sign-In",
     }
 ];
 

@@ -7,6 +7,10 @@ import {
 import routes from "../config/routes";
 import Button from "./Button";
 import { WeatherAuth } from "../auth/WeatherAuth";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCloudSunRain } from "@fortawesome/free-solid-svg-icons";
+
+
  
 export default function NavbarFunc() {
     const [isVisible, setIsVisible] = useState(false)
@@ -44,9 +48,10 @@ export default function NavbarFunc() {
 
   const isAuthenticated = !!weatherAuth.user;
 
+
  
   return (
-    <Navbar className="text-gray-300 lg:py-4 bg-slate-800">
+    <Navbar className="lg:py-4 bg-black text-white" >
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography
           as="a"
@@ -57,12 +62,11 @@ export default function NavbarFunc() {
         </Typography>
         <div className='relative ml-auto p-3'>
             <button onClick={dropDown} className='flex items-center px-3 py-2 border rounded hover:text-white hover:border-blue-400'>
-            <i className="fa-solid fa-martini-glass"></i>
+            <FontAwesomeIcon icon={faCloudSunRain} />
             </button>
         </div>
         { isVisible ? ( 
             <div className="hidden lg:block">
-                {navList}
                 {
                             !isAuthenticated ? 
                             <Button className='flex items-center hover:text-blue-400 hover:border-blue-400'>
@@ -74,8 +78,9 @@ export default function NavbarFunc() {
                             </Button>
                             :
                             <Button className='flex items-center hover:text-blue-400 hover:border-blue-400'>
-                                <div>
-                                    <Link to="/" onClick={signOutOnClick} className='flex place-items-center mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white'>
+                                <div className="flex place-items-center mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
+                                  {navList}
+                                    <Link to="/" onClick={signOutOnClick} className=''>
                                         Sign Out
                                     </Link>
                                 </div>
