@@ -9,8 +9,9 @@ import {
 import Modal from './Modal';
 import { WeatherAuth } from '../auth/WeatherAuth';
 import { db } from '../firebase-config';
-import { addDoc, doc, collection, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, doc, collection, getDocs, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
 import Background from '../assets/background.jpg'
+import CityInput from './CityInput';
 
 interface City {
   name: string;
@@ -123,21 +124,21 @@ function CityTable() {
   const handleDeleteCity = async (index: number) => {
     const cityToDelete = cities[index];
     if (userId && cityToDelete) {
-      const userDocRef = doc(db, 'users', userId);
-      const cityDocRef = doc(userDocRef, 'cities', cityToDelete.name);
+      console.log('Deleting city:', cityToDelete.name);
       try {
+        const userDocRef = doc(db, 'users', userId);
+        const cityDocRef = doc(userDocRef, 'cities', cityToDelete.name);
+        console.log('City Doc Ref: ', cityDocRef)
+  
         await deleteDoc(cityDocRef);
-  
-        setCities((prevCities) => prevCities.filter((_, i) => i !== index));
-        setWeatherData((prevData) => prevData.filter((_, i) => i !== index));
-  
+    
         console.log(`City '${cityToDelete.name}' deleted successfully.`);
       } catch (error) {
         console.error(`Error deleting city '${cityToDelete.name}':`, error);
       }
     }
   };
-
+  
 
   const handleUpdateCityName = async (index: number, newName: string) => {
     const cityToUpdate = cities[index];
@@ -145,30 +146,17 @@ function CityTable() {
       console.log('Updating city:', cityToUpdate.name);
       try {
         const userDocRef = doc(db, 'users', userId);
-        console.log('User doc ref:', userDocRef.path);
-        
-        const encodedNewName = encodeURIComponent(newName);
-        console.log('Encoded new name:', encodedNewName);
-        
-        const oldCityDocRef = doc(userDocRef, 'cities', cityToUpdate.name);
-        console.log('Old city doc ref:', oldCityDocRef.path);
-  
-        const newCityDocRef = doc(userDocRef, 'cities', encodedNewName);
-        console.log('New city doc ref:', newCityDocRef.path);
-
-        await updateDoc(newCityDocRef, { name: newName });
+        const cityDocRef = doc(userDocRef, 'cities', cityToUpdate.name);
+        await updateDoc(cityDocRef, { name: newName });
         setCities((prevCities) =>
-          prevCities.map((city, i) => (i === index ? { ...city, name: newName } : city))
-        );
-
-  
+        prevCities.map((city, i) => (i === index ? { ...city, name: newName } : city))
+      );
       } catch (error) {
         console.error('Error updating city name:', error);
       }
     }
   };
-  
-        
+          
   return (
     <>
     <div style={{backgroundImage: Background }}>
@@ -206,17 +194,7 @@ function CityTable() {
                     >
                       Delete
                     </button>
-                    <input
-                      type="text"
-                      placeholder="Enter new city name"
-                      className="p-1 border border-blue-500"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === 'Return') {
-                          handleUpdateCityName(index, city.name);
-                          console.log(e.key)
-                        }}
-                      }
-                    />
+                    <CityInput index={index} handleUpdateCityName={handleUpdateCityName} />
                     <button
                       onClick={() => handleShowModal(index)}
                       className="bg-black text-white px-3 py-1 rounded hover:bg-white hover:text-black"
