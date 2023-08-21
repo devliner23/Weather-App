@@ -13,8 +13,10 @@ import { addDoc, doc, collection, getDocs, deleteDoc, updateDoc, getDoc } from '
 import Background from '../assets/background.jpg'
 import CityInput from './CityInput';
 
+
 interface City {
   name: string;
+  id: string;
 }
 
 export interface WeatherData {
@@ -35,6 +37,8 @@ function CityTable() {
   const [showModal, setShowModal] = useState(false);
   const [modalCityIndex, setModalCityIndex] = useState<number | null>(null);
   const [weatherLoaded, setWeatherLoaded] = useState(false);
+  const [cityIdMap, setCityIdMap] = useState<{ [cityName: string]: string }>({});
+
 
   
 
@@ -53,7 +57,7 @@ function CityTable() {
         const fetchedCities: City[] = [];
         querySnapshot.forEach((doc) => {
           const cityName = doc.data().name;
-          fetchedCities.push({ name: cityName });
+          fetchedCities.push({ id: doc.id, name: cityName });
         });
         setCities(fetchedCities);
       })
@@ -115,51 +119,56 @@ function CityTable() {
       const formattedCityName = capitalizeCityName(newCityName);
       const userDocRef = doc(db, 'users', userId);
       const citiesCollectionRef = collection(userDocRef, 'cities');
-      await addDoc(citiesCollectionRef, { name: formattedCityName });
-      setCities((prevCities) => [...prevCities, { name: formattedCityName }]);
+      
+      // Add the new city document
+      const newCityDocRef = await addDoc(citiesCollectionRef, { name: formattedCityName });
+  
+      // Retrieve the city ID from the document reference
+      const newCityId = newCityDocRef.id;
+  
+      setCities((prevCities) => [...prevCities, { name: formattedCityName, id: newCityId }]);
       setNewCityName('');
     }
   };
-
-  const handleDeleteCity = async (index: number) => {
-    const cityToDelete = cities[index];
-    if (userId && cityToDelete) {
-      console.log('Deleting city:', cityToDelete.name);
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        const cityDocRef = doc(userDocRef, 'cities', cityToDelete.name);
-        console.log('City Doc Ref: ', cityDocRef)
   
-        await deleteDoc(cityDocRef);
-    
-        console.log(`City '${cityToDelete.name}' deleted successfully.`);
-      } catch (error) {
-        console.error(`Error deleting city '${cityToDelete.name}':`, error);
-      }
-    }
-  };
-  
-
   const handleUpdateCityName = async (index: number, newName: string) => {
     const cityToUpdate = cities[index];
     if (userId && cityToUpdate) {
       console.log('Updating city:', cityToUpdate.name);
       try {
         const userDocRef = doc(db, 'users', userId);
-        const cityDocRef = doc(userDocRef, 'cities', cityToUpdate.name);
-        await updateDoc(cityDocRef, { name: newName });
+        const cityDocRef = doc(userDocRef, 'cities', cityToUpdate.id);
+
+        const formattedNewName = capitalizeCityName(newName);
+
+        await updateDoc(cityDocRef, { name: formattedNewName });
         setCities((prevCities) =>
-        prevCities.map((city, i) => (i === index ? { ...city, name: newName } : city))
-      );
+          prevCities.map((city, i) => (i === index ? { ...city, name: formattedNewName } : city))
+        );
       } catch (error) {
         console.error('Error updating city name:', error);
       }
     }
   };
-          
+  
+  const handleDeleteCity = async (index: number) => {
+    const cityToDelete = cities[index];
+    if (userId && cityToDelete) {
+      console.log('Deleting city:', cityToDelete.name);
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const cityDocRef = doc(userDocRef, 'cities', cityToDelete.id); // Use city ID here
+        await deleteDoc(cityDocRef);
+        setCities((prevCities) => prevCities.filter((_, i) => i !== index));
+      } catch (error) {
+        console.error(`Error deleting city '${cityToDelete.name}':`, error);
+      }
+    }
+  };
+              
   return (
     <>
-    <div style={{backgroundImage: Background }}>
+    <div>
       <div className="bg-black bg-opacity-70 mx-auto w-6/12 p-4 rounded-md flex justify-center justify-items-center justify-self-center">
           <input
             type="text"
@@ -176,10 +185,10 @@ function CityTable() {
           </button>
         </div>
         <div className="flex justify-center2">
-        <table className="border w-6/12 mx-auto border-blue-500">
+        <table className="bg-white border w-6/12 mx-auto border-blue-500">
           <thead>
             <tr>
-              <th className="border-b border-blue-500 p-2">City</th>
+              <th className="border-b border-blue-500 p-2 text-2xl">City</th>
             </tr>
           </thead>
           <tbody>
