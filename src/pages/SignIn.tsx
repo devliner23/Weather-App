@@ -12,11 +12,11 @@ function SignIn() {
       <div className="flex justify-center items-center min-h-screen bg-black bg-opacity-80">
         <div className="max-w-md p-6 bg-white rounded shadow-md">
           {user ? (
-            <div className="text-black">
-              <p>Welcome, {user.email}!</p>
-              <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded" onClick={logout}>
-                Logout
-              </button>
+            <div className="text-black flex flex-col items-center justify-center h-full">
+                <p className="text-xl mb-4">Welcome, {user.email}!</p>
+                <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded" onClick={logout}>
+                    Logout
+                </button>
             </div>
           ) : (
             <div className="text-black">

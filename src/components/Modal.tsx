@@ -82,20 +82,20 @@ const Modal = (props: Props) => {
             </p>
           </div>
           <div className="text-center p-2 mx-auto w-3/5">
-  <h2 className="bg-black opacity-50 text-white p-2 text-xl border border-white rounded">{formattedCity}</h2><br />
-  <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Temperature: {weatherData.temperature}°F</p>
-  <table className="table-auto w-full mt-4 p-2">
-    <thead className="bg-black opacity-50 text-white">
-      <tr>
-        <th>Date</th>
-        <th>Temperature</th>
-      </tr>
-    </thead>
-    <tbody className="bg-black opacity-50 text-white">{forecastRows}</tbody>
-  </table><br />
-  <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Humidity: {weatherData.humidity}%</p><br />
-  <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Precipitation: {weatherData.precipitation}</p><br />
-</div>
+            <h2 className="bg-black opacity-50 text-white p-2 text-xl border border-white rounded">{formattedCity}</h2><br />
+            <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Temperature: {weatherData.temperature}°F</p>
+            <table className="table-auto w-full mt-4 p-2">
+              <thead className="bg-black opacity-50 text-white">
+                <tr>
+                  <th>Date</th>
+                  <th>Temperature</th>
+                </tr>
+              </thead>
+              <tbody className="bg-black opacity-50 text-white">{forecastRows}</tbody>
+            </table><br />
+            <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Humidity: {weatherData.humidity}%</p><br />
+            <p className="bg-black opacity-50 text-white p-2 text-lg border border-white rounded">Precipitation: {weatherData.precipitation}</p><br />
+          </div>
         </div>
       </div>
     </div>

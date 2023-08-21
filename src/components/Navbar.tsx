@@ -9,6 +9,7 @@ import Button from "./Button";
 import { WeatherAuth } from "../auth/WeatherAuth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudSunRain } from "@fortawesome/free-solid-svg-icons";
+import SignIn from "../pages/SignIn";
 
 export default function NavbarFunc() {
   const [isVisible, setIsVisible] = useState(false);
@@ -55,12 +56,13 @@ export default function NavbarFunc() {
                       {route.name}
                     </Link>
                   ))}
-                  <button
+                  <Link
+                    to="/signin"
                     onClick={signOutOnClick}
                     className="hover:text-blue-400 hover:border-blue-400"
                   >
                     Sign Out
-                  </button>
+                  </Link>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
