@@ -1,3 +1,6 @@
+# Current Weather application using React.js and Firebase/Firestore
+View the hosted site: (bucolic-buttercream-79eace.netlify.app)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
